@@ -15,6 +15,9 @@ func _ready() -> void:
 		print("Failed to start ArtNet controller")
 		return
 	
+	# Enable DMX sending (required before send_dmx() will actually transmit)
+	artnet.set_enable_sending_dmx(true)
+	
 	print("ArtNet controller started successfully")
 	
 	# Create DMX data (512 channels)

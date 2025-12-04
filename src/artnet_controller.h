@@ -32,6 +32,7 @@ public:
 	bool is_running() const;
 
 	// DMX Operations
+	void set_enable_sending_dmx(bool enable);
 	bool set_dmx_data(int universe, const PackedByteArray &data);
 	bool send_dmx();
 };

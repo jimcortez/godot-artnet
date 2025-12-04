@@ -79,6 +79,9 @@ func _ready():
         print("Failed to start ArtNet controller")
         return
     
+    # Enable DMX sending (required before send_dmx() will actually transmit)
+    artnet.set_enable_sending_dmx(true)
+    
     print("ArtNet controller started")
 
 func _process(_delta):
@@ -135,6 +138,10 @@ The main class for ArtNet operations.
   
   Returns `true` if the controller is currently running.
 
+- **`set_enable_sending_dmx(enable: bool) -> void`**
+  
+  Enables or disables DMX transmission. By default, DMX sending is disabled. You must call this method with `true` before `send_dmx()` will actually transmit data. When disabled, `send_dmx()` will return `true` without sending any packets.
+
 - **`set_dmx_data(universe: int, data: PackedByteArray) -> bool`**
   
   Sets the DMX data for a specific universe. The data array should contain up to 512 channel values (0-255).
@@ -149,6 +156,8 @@ The main class for ArtNet operations.
   Sends the configured DMX data as an ArtNet packet.
   
   Returns `true` if the packet was sent successfully.
+  
+  **Note:** DMX sending must be enabled using `set_enable_sending_dmx(true)` before this method will actually transmit data. If sending is disabled, this method will return `true` without sending any packets.
 
 ## Art-Net Protocol
 

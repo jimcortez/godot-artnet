@@ -50,6 +50,13 @@
 				Returns [code]true[/code] if the controller is currently running, [code]false[/code] otherwise.
 			</description>
 		</method>
+		<method name="set_enable_sending_dmx">
+			<return type="void" />
+			<param index="0" name="enable" type="bool" />
+			<description>
+				Enables or disables DMX transmission. By default, DMX sending is disabled. You must call this method with [code]true[/code] before [method send_dmx] will actually transmit data. When disabled, [method send_dmx] will return [code]true[/code] without sending any packets.
+			</description>
+		</method>
 		<method name="set_dmx_data">
 			<return type="bool" />
 			<param index="0" name="universe" type="int" />
@@ -67,6 +74,8 @@
 			<description>
 				Sends the configured DMX data as an ArtNet packet.
 				Returns [code]true[/code] if the packet was sent successfully, [code]false[/code] otherwise.
+				
+				[b]Note:[/b] DMX sending must be enabled using [method set_enable_sending_dmx] before this method will actually transmit data. If sending is disabled, this method will return [code]true[/code] without sending any packets.
 			</description>
 		</method>
 	</methods>

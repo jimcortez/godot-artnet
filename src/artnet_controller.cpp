@@ -10,6 +10,7 @@ void ArtNetController::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start"), &ArtNetController::start);
 	ClassDB::bind_method(D_METHOD("stop"), &ArtNetController::stop);
 	ClassDB::bind_method(D_METHOD("is_running"), &ArtNetController::is_running);
+	ClassDB::bind_method(D_METHOD("set_enable_sending_dmx", "enable"), &ArtNetController::set_enable_sending_dmx);
 	ClassDB::bind_method(D_METHOD("set_dmx_data", "universe", "data"), &ArtNetController::set_dmx_data);
 	ClassDB::bind_method(D_METHOD("send_dmx"), &ArtNetController::send_dmx);
 }
@@ -55,6 +56,12 @@ bool ArtNetController::is_running() const {
 		return false;
 	}
 	return controller->isRunning();
+}
+
+void ArtNetController::set_enable_sending_dmx(bool enable) {
+	if (controller) {
+		controller->setEnableSendingDMX(enable);
+	}
 }
 
 bool ArtNetController::set_dmx_data(int universe, const PackedByteArray &data) {
