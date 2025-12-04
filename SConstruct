@@ -46,6 +46,10 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 env.Append(CPPPATH=["src/", "lib-artnet-4-cpp/artnet"])
 
+# Add compatibility include path for Windows builds
+if env["platform"] == "windows":
+    env.Append(CPPPATH=["src/compat"])
+
 # Add artnet library sources
 artnet_sources = [
     "lib-artnet-4-cpp/artnet/ArtNetController.cpp",
@@ -70,6 +74,26 @@ if "CXXFLAGS" in artnet_env:
     # Remove -fno-exceptions if present and add -fexceptions
     artnet_env["CXXFLAGS"] = [flag for flag in artnet_env["CXXFLAGS"] if flag != "-fno-exceptions"]
 artnet_env.Append(CXXFLAGS=["-fexceptions"])
+
+# Force include header to fix missing cstring include in library
+if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
+    # MSVC: use /FI (Force Include)
+    artnet_env.Append(CCFLAGS=["/FI", "src/artnet_force_include.h"])
+else:
+    # GCC/Clang: use -include
+    artnet_env.Append(CCFLAGS=["-include", "src/artnet_force_include.h"])
+
+# Add Windows compatibility for artnet library
+if env["platform"] == "windows":
+    # Add compatibility include path (must be first to shadow system headers)
+    artnet_env.Prepend(CPPPATH=["src/compat"])
+    # Link with ws2_32 library for Windows sockets
+    artnet_env.Append(LIBS=["ws2_32"])
+
+# Add Linux compatibility for endian headers
+if env["platform"] == "linux" or env["platform"] == "android":
+    # Add compatibility include path for Linux endian headers
+    artnet_env.Prepend(CPPPATH=["src/compat"])
 
 # Compile artnet sources with exceptions enabled
 artnet_objects = []
