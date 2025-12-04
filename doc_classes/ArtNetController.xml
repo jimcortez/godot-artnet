@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ArtNetController" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		ArtNet controller for sending DMX data over Art-Net protocol.
+	</brief_description>
+	<description>
+		ArtNetController provides a GDScript interface to the lib-artnet-4-cpp library, enabling ArtNet DMX transmission from Godot. This class wraps the Art-Net 4 protocol implementation and allows you to configure network settings, set DMX channel data, and send ArtNet packets.
+
+		Art-Net is a protocol for transmitting DMX512 data over Ethernet networks, commonly used in professional lighting control systems.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="configure">
+			<return type="bool" />
+			<param index="0" name="bind_address" type="String" />
+			<param index="1" name="port" type="int" />
+			<param index="2" name="net" type="int" />
+			<param index="3" name="subnet" type="int" />
+			<param index="4" name="universe" type="int" />
+			<param index="5" name="broadcast_address" type="String" default="&quot;255.255.255.255&quot;" />
+			<description>
+				Configures the ArtNet controller with network and universe settings.
+				- [param bind_address]: The local IP address to bind to (use "0.0.0.0" to bind to all interfaces)
+				- [param port]: The UDP port to use (default Art-Net port is 6454)
+				- [param net]: The Art-Net net value (0-127)
+				- [param subnet]: The Art-Net subnet value (0-15)
+				- [param universe]: The Art-Net universe value (0-15)
+				- [param broadcast_address]: The broadcast address to send packets to (default: "255.255.255.255")
+				
+				Returns [code]true[/code] if configuration was successful, [code]false[/code] otherwise.
+			</description>
+		</method>
+		<method name="start">
+			<return type="bool" />
+			<description>
+				Starts the ArtNet controller and begins network operations.
+				Returns [code]true[/code] if started successfully, [code]false[/code] otherwise.
+			</description>
+		</method>
+		<method name="stop">
+			<return type="void" />
+			<description>
+				Stops the ArtNet controller and stops all network operations.
+			</description>
+		</method>
+		<method name="is_running">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] if the controller is currently running, [code]false[/code] otherwise.
+			</description>
+		</method>
+		<method name="set_dmx_data">
+			<return type="bool" />
+			<param index="0" name="universe" type="int" />
+			<param index="1" name="data" type="PackedByteArray" />
+			<description>
+				Sets the DMX data for a specific universe. The data array should contain up to 512 channel values (0-255).
+				- [param universe]: The universe number to set data for
+				- [param data]: A PackedByteArray containing DMX channel values (0-255)
+				
+				Returns [code]true[/code] if the data was set successfully, [code]false[/code] otherwise.
+			</description>
+		</method>
+		<method name="send_dmx">
+			<return type="bool" />
+			<description>
+				Sends the configured DMX data as an ArtNet packet.
+				Returns [code]true[/code] if the packet was sent successfully, [code]false[/code] otherwise.
+			</description>
+		</method>
+	</methods>
+	<constants>
+	</constants>
+</class>
+

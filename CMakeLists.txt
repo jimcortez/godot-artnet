@@ -1,11 +1,11 @@
-# Using the same minimum as the godot-cpp project
-cmake_minimum_required(VERSION 3.17)
+# Using CMake 3.31.2 to match lib-artnet-4-cpp requirements
+cmake_minimum_required(VERSION 3.31.2)
 
 # Silence unused variable warning when specified from toolchain
 if(CMAKE_C_COMPILER)
 endif()
 
-set(LIBNAME "EXTENSION-NAME" CACHE STRING "The name of the library")
+set(LIBNAME "godot-artnet" CACHE STRING "The name of the library")
 set(GODOT_PROJECT_DIR "demo" CACHE STRING "The directory of a Godot project folder")
 
 # Make sure all the dependencies are satisfied
@@ -26,6 +26,22 @@ if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
 endif()
 add_subdirectory(godot-cpp SYSTEM)
 
+# Ensure lib-artnet-4-cpp submodule has been updated
+if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/lib-artnet-4-cpp/artnet")
+    message(NOTICE "lib-artnet-4-cpp source not found")
+    message(NOTICE "initializing/updating the lib-artnet-4-cpp submodule...")
+
+    # update the artnet library submodule to populate it with the necessary source
+    execute_process(
+        COMMAND git submodule update --init lib-artnet-4-cpp
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        COMMAND_ERROR_IS_FATAL ANY
+    )
+endif()
+
+# Add lib-artnet-4-cpp submodule
+add_subdirectory(lib-artnet-4-cpp)
+
 # Add godot-cpp's module path and include the exported functions.
 # This is made available for documentation generation
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${godot-cpp_SOURCE_DIR}/cmake")
@@ -36,10 +52,10 @@ get_target_property(GODOTCPP_SUFFIX godot::cpp GODOTCPP_SUFFIX)
 get_target_property(GODOTCPP_PLATFORM godot::cpp GODOTCPP_PLATFORM)
 
 # Now we can specify our own project which will inherit any global cmake properties or variables that have been defined.
-project(godot-cpp-template
+project(godot-artnet
     VERSION 1.0
-    DESCRIPTION "This repository serves as a quickstart template for GDExtension development with Godot 4.0+."
-    HOMEPAGE_URL "https://github.com/enetheru/godot-cpp-template/tree/main"
+    DESCRIPTION "GDExtension wrapper for lib-artnet-4-cpp to enable ArtNet DMX transmission from Godot."
+    HOMEPAGE_URL "https://github.com/jecortez/godot-artnet"
     LANGUAGES CXX
 )
 
@@ -49,8 +65,8 @@ target_sources(${LIBNAME}
     PRIVATE
     src/register_types.cpp
     src/register_types.h
-    src/example_class.cpp
-    src/example_class.h
+    src/artnet_controller.cpp
+    src/artnet_controller.h
 )
 
 # Fetch a list of the xml files to use for documentation and add to our target
@@ -63,7 +79,10 @@ if(DOC_XML)
     endif()
 endif()
 
-target_link_libraries(${LIBNAME} PRIVATE godot-cpp)
+target_link_libraries(${LIBNAME} PRIVATE godot-cpp artnet)
+
+# Include directories for artnet library
+target_include_directories(${LIBNAME} PRIVATE lib-artnet-4-cpp/artnet)
 
 # Require at least C++17 for this target
 set_property(TARGET ${LIBNAME} PROPERTY CXX_STANDARD 17)
