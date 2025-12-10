@@ -20,8 +20,12 @@
 // htons, ntohs, htonl, ntohl are in arpa/inet.h on macOS
 #include <arpa/inet.h>
 #elif defined(__linux__) || defined(__ANDROID__)
-// Linux: provide byte order functions via arpa/inet.h
+// Linux/Android: provide byte order functions via arpa/inet.h
+// On Android, we need to ensure netinet/in.h is included first
 // The library uses htons/ntohs which are in arpa/inet.h
+#ifdef __GNUC__
+#include_next <netinet/in.h>
+#endif
 #include <arpa/inet.h>
 // htons, ntohs, htonl, ntohl are in arpa/inet.h
 #endif

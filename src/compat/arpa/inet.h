@@ -13,9 +13,13 @@
 // inet_addr, inet_ntoa are in winsock2.h
 // inet_pton, inet_ntop are in ws2tcpip.h
 #else
-// On Unix/Linux, include the real arpa/inet.h using include_next to skip this header
+// On Unix/Linux/Android, include the real arpa/inet.h using include_next to skip this header
 // #include_next is supported by GCC, Clang, and Intel ICC
 #if defined(__GNUC__) || defined(__clang__) || (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 800)
+// On Android/Linux, ensure netinet/in.h is included first as htons/ntohs may depend on it
+#if defined(__ANDROID__) || defined(__linux__)
+#include_next <netinet/in.h>
+#endif
 #include_next <arpa/inet.h>
 #else
 // For compilers without #include_next support:
