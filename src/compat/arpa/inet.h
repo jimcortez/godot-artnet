@@ -14,13 +14,18 @@
 // inet_pton, inet_ntop are in ws2tcpip.h
 #else
 // On Unix/Linux, include the real arpa/inet.h using include_next to skip this header
-#ifdef __GNUC__
+// #include_next is supported by GCC, Clang, and Intel ICC
+#if defined(__GNUC__) || defined(__clang__) || (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 800)
 #include_next <arpa/inet.h>
 #else
-// For non-GCC compilers, try to include system header
-#include <arpa/inet.h>
+// For compilers without #include_next support:
+// Check if we're being included recursively (system header guard already defined)
+// Most system headers define _ARPA_INET_H or similar
+#if !defined(_ARPA_INET_H) && !defined(_NETINET_IN_H)
+// Not recursively including - this shouldn't happen with proper compilers
+// but if it does, error out to prevent infinite recursion
+#error "arpa/inet.h compatibility header requires GCC, Clang, or Intel ICC compiler with #include_next support"
+#endif
 #endif
 #endif // _WIN32
 #endif // ARPA_INET_H
-
-

@@ -14,11 +14,18 @@
 // INADDR_ANY, INADDR_BROADCAST are in winsock2.h
 #else
 // On Unix/Linux, include the real netinet/in.h using include_next to skip this header
-#ifdef __GNUC__
+// #include_next is supported by GCC, Clang, and Intel ICC
+#if defined(__GNUC__) || defined(__clang__) || (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 800)
 #include_next <netinet/in.h>
 #else
-// For non-GCC compilers, try to include system header
-#include <netinet/in.h>
+// For compilers without #include_next support:
+// Check if we're being included recursively (system header guard already defined)
+// Most system headers define _NETINET_IN_H or similar
+#if !defined(_NETINET_IN_H) && !defined(__NETINET_IN_H)
+// Not recursively including - this shouldn't happen with proper compilers
+// but if it does, error out to prevent infinite recursion
+#error "netinet/in.h compatibility header requires GCC, Clang, or Intel ICC compiler with #include_next support"
+#endif
 #endif
 #endif // _WIN32
 #endif // NETINET_IN_H
