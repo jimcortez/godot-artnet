@@ -20,15 +20,26 @@
 // htons, ntohs, htonl, ntohl are in arpa/inet.h on macOS
 #include <arpa/inet.h>
 #elif defined(__linux__) || defined(__ANDROID__)
-// Linux/Android: provide byte order functions via arpa/inet.h
-// On Android/Linux, ensure netinet/in.h is included first using include_next
-// The library uses htons/ntohs which are in arpa/inet.h
+// Linux/Android: provide byte order functions via arpa/inet.h or endian.h
+// On Android, htons/ntohs may be in endian.h, so include it if available
+#if defined(__ANDROID__)
+#ifdef __has_include
+#if __has_include(<endian.h>)
+#include_next <endian.h>
+#endif
+#endif
+// Also include netinet/in.h as it may be needed
 #if defined(__GNUC__) || defined(__clang__)
-// Use include_next to get the real netinet/in.h (skip our compatibility header)
 #include_next <netinet/in.h>
 #endif
+#endif
+// Include arpa/inet.h for htons/ntohs (works on both Linux and Android)
+#if defined(__GNUC__) || defined(__clang__)
+#include_next <arpa/inet.h>
+#else
 #include <arpa/inet.h>
-// htons, ntohs, htonl, ntohl are in arpa/inet.h
+#endif
+// htons, ntohs, htonl, ntohl are in arpa/inet.h or endian.h
 #endif
 
 #endif // SYS_ENDIAN_H

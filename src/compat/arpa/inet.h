@@ -16,10 +16,18 @@
 // On Unix/Linux/Android, include the real arpa/inet.h using include_next to skip this header
 // #include_next is supported by GCC, Clang, and Intel ICC
 #if defined(__GNUC__) || defined(__clang__) || (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 800)
-// On Android/Linux, ensure netinet/in.h is included first as htons/ntohs may depend on it
-// Include netinet/in.h first to ensure proper definitions
-#if defined(__ANDROID__) || defined(__linux__)
-// Use include_next to get the real netinet/in.h (skip our compatibility header)
+// On Android, htons/ntohs may be in endian.h or require specific include order
+#if defined(__ANDROID__)
+// On Android, try to include endian.h first if available, as it may define htons/ntohs
+#ifdef __has_include
+#if __has_include(<endian.h>)
+#include_next <endian.h>
+#endif
+#endif
+// Also include netinet/in.h as it may be needed
+#include_next <netinet/in.h>
+#elif defined(__linux__)
+// On Linux, ensure netinet/in.h is included first as htons/ntohs may depend on it
 #include_next <netinet/in.h>
 #endif
 #include_next <arpa/inet.h>
