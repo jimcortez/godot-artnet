@@ -3,13 +3,26 @@
 #define PTHREAD_H_COMPAT
 
 #ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #include <process.h>
+
+// Undefine ERROR macro to prevent conflicts with LogLevel::ERROR in logging.h
+#ifdef ERROR
+#undef ERROR
+#endif
 
 // Minimal pthread compatibility for Windows
 // Note: This is a minimal stub - full pthread implementation would require more
 typedef HANDLE pthread_t;
 typedef CRITICAL_SECTION pthread_mutex_t;
+
+// Provide pthread_self() for Windows
+inline pthread_t pthread_self() {
+    return GetCurrentThread();
+}
 
 // For setThreadPriority in utils.h, we'll use Windows API directly
 // So we don't need full pthread implementation here

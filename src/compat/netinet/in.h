@@ -9,6 +9,12 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+// Undefine ERROR macro to prevent conflicts with LogLevel::ERROR in logging.h
+// Windows.h defines ERROR as a macro, which conflicts with enum values
+#ifdef ERROR
+#undef ERROR
+#endif
+
 // sockaddr_in, socklen_t, etc. are already defined in winsock2.h
 // AF_INET, SOCK_DGRAM, IPPROTO_UDP are in winsock2.h
 // INADDR_ANY, INADDR_BROADCAST are in winsock2.h
