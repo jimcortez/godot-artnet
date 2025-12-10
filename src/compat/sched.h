@@ -9,8 +9,13 @@
 // For setThreadPriority in utils.h, we'll use Windows API directly
 // So we don't need full sched implementation here
 #else
-// On Unix/Linux, include the real sched.h
+// On Unix/Linux, include the real sched.h using include_next to skip this header
+#ifdef __GNUC__
+#include_next <sched.h>
+#else
+// For non-GCC compilers, try to include system header
 #include <sched.h>
+#endif
 #endif // _WIN32
 #endif // SCHED_H_COMPAT
 

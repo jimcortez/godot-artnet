@@ -13,8 +13,13 @@
 // AF_INET, SOCK_DGRAM, IPPROTO_UDP are in winsock2.h
 // INADDR_ANY, INADDR_BROADCAST are in winsock2.h
 #else
-// On Unix/Linux, include the real netinet/in.h
+// On Unix/Linux, include the real netinet/in.h using include_next to skip this header
+#ifdef __GNUC__
+#include_next <netinet/in.h>
+#else
+// For non-GCC compilers, try to include system header
 #include <netinet/in.h>
+#endif
 #endif // _WIN32
 #endif // NETINET_IN_H
 
