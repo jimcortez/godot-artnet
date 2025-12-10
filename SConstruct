@@ -46,10 +46,6 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 env.Append(CPPPATH=["src/", "lib-artnet-4-cpp/artnet"])
 
-# Add compatibility include path for Windows builds
-if env["platform"] == "windows":
-    env.Append(CPPPATH=["src/compat"])
-
 # Add artnet library sources
 artnet_sources = [
     "lib-artnet-4-cpp/artnet/ArtNetController.cpp",
@@ -83,17 +79,15 @@ else:
     # GCC/Clang: use -include
     artnet_env.Append(CCFLAGS=["-include", "src/artnet_force_include.h"])
 
-# Add Windows compatibility for artnet library
+# Add compatibility include path for all platforms
+# Compatibility headers will include real system headers on Unix/Linux
+# and provide Windows equivalents on Windows
+artnet_env.Prepend(CPPPATH=["src/compat"])
+
+# Add Windows-specific settings
 if env["platform"] == "windows":
-    # Add compatibility include path (must be first to shadow system headers)
-    artnet_env.Prepend(CPPPATH=["src/compat"])
     # Link with ws2_32 library for Windows sockets
     artnet_env.Append(LIBS=["ws2_32"])
-
-# Add Linux compatibility for endian headers
-if env["platform"] == "linux" or env["platform"] == "android":
-    # Add compatibility include path for Linux endian headers
-    artnet_env.Prepend(CPPPATH=["src/compat"])
 
 # Compile artnet sources with exceptions enabled
 artnet_objects = []

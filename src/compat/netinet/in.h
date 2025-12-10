@@ -1,4 +1,4 @@
-// Windows compatibility header for netinet/in.h
+// Compatibility header for netinet/in.h
 #ifndef NETINET_IN_H
 #define NETINET_IN_H
 
@@ -12,7 +12,10 @@
 // sockaddr_in, socklen_t, etc. are already defined in winsock2.h
 // AF_INET, SOCK_DGRAM, IPPROTO_UDP are in winsock2.h
 // INADDR_ANY, INADDR_BROADCAST are in winsock2.h
-
+#else
+// On Unix/Linux, include the real netinet/in.h
+#include <netinet/in.h>
 #endif // _WIN32
 #endif // NETINET_IN_H
+
 

@@ -1,4 +1,4 @@
-// Windows compatibility header for arpa/inet.h
+// Compatibility header for arpa/inet.h
 #ifndef ARPA_INET_H
 #define ARPA_INET_H
 
@@ -12,7 +12,10 @@
 // htons, ntohs, htonl, ntohl are already defined in winsock2.h
 // inet_addr, inet_ntoa are in winsock2.h
 // inet_pton, inet_ntop are in ws2tcpip.h
-
+#else
+// On Unix/Linux, include the real arpa/inet.h
+#include <arpa/inet.h>
 #endif // _WIN32
 #endif // ARPA_INET_H
+
 

@@ -1,4 +1,4 @@
-// Windows compatibility header for pthread.h
+// Compatibility header for pthread.h
 #ifndef PTHREAD_H_COMPAT
 #define PTHREAD_H_COMPAT
 
@@ -13,7 +13,10 @@ typedef CRITICAL_SECTION pthread_mutex_t;
 
 // For setThreadPriority in utils.h, we'll use Windows API directly
 // So we don't need full pthread implementation here
-
+#else
+// On Unix/Linux, include the real pthread.h
+#include <pthread.h>
 #endif // _WIN32
 #endif // PTHREAD_H_COMPAT
+
 
