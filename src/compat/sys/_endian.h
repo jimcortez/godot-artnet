@@ -10,6 +10,15 @@
 #endif
 #include <winsock2.h>
 // htons, ntohs, htonl, ntohl are in winsock2.h
+#elif defined(__APPLE__) || defined(__MACH__)
+// macOS/BSD: include the real sys/_endian.h and arpa/inet.h for byte order functions
+#ifdef __GNUC__
+#include_next <sys/_endian.h>
+#else
+#include <sys/_endian.h>
+#endif
+// htons, ntohs, htonl, ntohl are in arpa/inet.h on macOS
+#include <arpa/inet.h>
 #elif defined(__linux__) || defined(__ANDROID__)
 // Linux: provide byte order functions via arpa/inet.h
 // The library uses htons/ntohs which are in arpa/inet.h
