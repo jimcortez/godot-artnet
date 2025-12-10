@@ -86,9 +86,11 @@ if env["platform"] == "web":
     artnet_env.Append(LINKFLAGS=["-sDISABLE_EXCEPTION_THROWING=0"])
 
 # Force include header to fix missing cstring include in library
+# Get absolute path to the force-include header
+force_include_path = os.path.abspath("src/artnet_force_include.h")
 if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
-    # MSVC: use /FI (Force Include)
-    artnet_env.Append(CCFLAGS=["/FI", "src/artnet_force_include.h"])
+    # MSVC: use /FI (Force Include) - requires absolute path on Windows
+    artnet_env.Append(CCFLAGS=["/FI", force_include_path])
 else:
     # GCC/Clang: use -include
     artnet_env.Append(CCFLAGS=["-include", "src/artnet_force_include.h"])
