@@ -71,6 +71,20 @@ if "CXXFLAGS" in artnet_env:
     artnet_env["CXXFLAGS"] = [flag for flag in artnet_env["CXXFLAGS"] if flag != "-fno-exceptions"]
 artnet_env.Append(CXXFLAGS=["-fexceptions"])
 
+# For web/wasm builds, configure Emscripten exceptions properly
+# Emscripten C++ exceptions conflict with setjmp/longjmp, so we need to disable
+# the longjmp mechanism when exceptions are enabled
+if env["platform"] == "web":
+    # Remove SUPPORT_LONGJMP flag as it conflicts with C++ exceptions
+    # Emscripten will use its own exception mechanism instead
+    if "CCFLAGS" in artnet_env:
+        artnet_env["CCFLAGS"] = [flag for flag in artnet_env["CCFLAGS"] if not flag.startswith("-sSUPPORT_LONGJMP")]
+    if "LINKFLAGS" in artnet_env:
+        artnet_env["LINKFLAGS"] = [flag for flag in artnet_env["LINKFLAGS"] if not flag.startswith("-sSUPPORT_LONGJMP")]
+    # Enable Emscripten C++ exceptions
+    artnet_env.Append(CCFLAGS=["-sDISABLE_EXCEPTION_THROWING=0"])
+    artnet_env.Append(LINKFLAGS=["-sDISABLE_EXCEPTION_THROWING=0"])
+
 # Force include header to fix missing cstring include in library
 if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
     # MSVC: use /FI (Force Include)
