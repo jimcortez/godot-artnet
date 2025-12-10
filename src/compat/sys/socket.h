@@ -32,9 +32,17 @@
 #endif
 
 // Windows recvfrom expects char* but code uses uint8_t*
-// Note: uint8_t is unsigned char, which should be compatible with char*
-// MSVC is strict about this type mismatch, but the library code should work
-// If compilation fails, the library code may need to cast uint8_t* to char*
+// Provide a compatibility wrapper to handle the type mismatch
+#include <cstdint>
+
+// Provide an overloaded recvfrom that accepts uint8_t*
+// This allows the library code to work without modification
+inline int recvfrom(SOCKET s, uint8_t *buf, int len, int flags, struct sockaddr *from, int *fromlen) {
+    return ::recvfrom(s, reinterpret_cast<char*>(buf), len, flags, from, fromlen);
+}
+
+// Keep the original recvfrom for char* buffers
+// (The original is already declared in winsock2.h)
 
 #else
 // On Unix/Linux/macOS/web, include the real sys/socket.h using include_next

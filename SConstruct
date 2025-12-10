@@ -71,6 +71,11 @@ if "CXXFLAGS" in artnet_env:
     artnet_env["CXXFLAGS"] = [flag for flag in artnet_env["CXXFLAGS"] if flag != "-fno-exceptions"]
 artnet_env.Append(CXXFLAGS=["-fexceptions"])
 
+# For MSVC, enable exception handling with /EHsc
+if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
+    # /EHsc enables C++ exception handling (synchronous exception model)
+    artnet_env.Append(CCFLAGS=["/EHsc"])
+
 # For web/wasm builds, configure Emscripten exceptions properly
 # Emscripten C++ exceptions conflict with setjmp/longjmp, so we need to disable
 # the longjmp mechanism when exceptions are enabled
