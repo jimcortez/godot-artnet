@@ -17,7 +17,9 @@
 // #include_next is supported by GCC, Clang, and Intel ICC
 #if defined(__GNUC__) || defined(__clang__) || (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 800)
 // On Android/Linux, ensure netinet/in.h is included first as htons/ntohs may depend on it
+// Include netinet/in.h first to ensure proper definitions
 #if defined(__ANDROID__) || defined(__linux__)
+// Use include_next to get the real netinet/in.h (skip our compatibility header)
 #include_next <netinet/in.h>
 #endif
 #include_next <arpa/inet.h>
