@@ -100,10 +100,17 @@ else:
     # GCC/Clang: use -include
     artnet_env.Append(CCFLAGS=["-include", "src/artnet_force_include.h"])
 
-# Add compatibility include path for all platforms
-# Compatibility headers will include real system headers on Unix/Linux
-# and provide Windows equivalents on Windows
-artnet_env.Prepend(CPPPATH=["src/compat"])
+# Add compatibility include path scoped to artnet library sources only
+# Using compiler-specific flags to add compat directory as system include path
+# This keeps compatibility headers isolated to library sources, not affecting our own code
+compat_path = os.path.abspath("src/compat")
+if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
+    # MSVC: use /I (Include Path) - system includes are treated specially
+    artnet_env.Append(CCFLAGS=["/I", compat_path])
+else:
+    # GCC/Clang: use -isystem to mark as system header directory
+    # This suppresses warnings and keeps it scoped to artnet sources
+    artnet_env.Append(CCFLAGS=["-isystem", compat_path])
 
 # Add Windows-specific settings
 if env["platform"] == "windows":

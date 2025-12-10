@@ -42,6 +42,10 @@ endif()
 # Add lib-artnet-4-cpp submodule
 add_subdirectory(lib-artnet-4-cpp)
 
+# Add compatibility include directory to artnet library target only
+# Using SYSTEM to mark as system headers (suppresses warnings and keeps scoped)
+target_include_directories(artnet SYSTEM PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/compat")
+
 # Add godot-cpp's module path and include the exported functions.
 # This is made available for documentation generation
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${godot-cpp_SOURCE_DIR}/cmake")
