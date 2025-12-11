@@ -2,6 +2,8 @@
 
 A GDExtension plugin for Godot 4.0+ that provides ArtNet DMX transmission capabilities. This plugin wraps the [lib-artnet-4-cpp](https://github.com/gastonmorixe/lib-artnet-4-cpp) library, enabling you to send ArtNet commands from GDScript.
 
+Also see [godot-artnet](https://github.com/jimcortez/godot-libartnet), which wraps the more-stable libartnet library.
+
 ## Features
 
 - Send DMX512 data over Art-Net protocol
