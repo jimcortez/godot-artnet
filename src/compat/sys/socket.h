@@ -8,8 +8,13 @@
 #endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
-// Include sys/types.h for ssize_t definition on Windows
-#include <sys/types.h>
+// Define ssize_t directly here instead of including sys/types.h
+// Including sys/types.h can cause conflicts with Windows sys/stat.h
+// ssize_t is a signed size type, we use int since Windows socket functions return int
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
+typedef int ssize_t;
+#endif
 
 // Undefine ERROR macro to prevent conflicts with LogLevel::ERROR in logging.h
 // Windows.h defines ERROR as a macro, which conflicts with enum values
@@ -55,6 +60,17 @@ inline int sendto(SOCKET s, const uint8_t *buf, size_t len, int flags, struct so
 // Note: socklen_t is int on Windows, so this matches the code's usage
 inline int recvfrom(SOCKET s, uint8_t *buf, int len, int flags, struct sockaddr *from, socklen_t *fromlen) {
     return ::recvfrom(s, reinterpret_cast<char*>(buf), len, flags, from, fromlen);
+}
+
+// Windows setsockopt expects const char* for option value, but code uses int*
+// Provide overloaded setsockopt that accepts int* and other pointer types
+inline int setsockopt(SOCKET s, int level, int optname, const int *optval, size_t optlen) {
+    return ::setsockopt(s, level, optname, reinterpret_cast<const char*>(optval), static_cast<int>(optlen));
+}
+
+// Also provide overload for non-const int* (some code might use this)
+inline int setsockopt(SOCKET s, int level, int optname, int *optval, size_t optlen) {
+    return ::setsockopt(s, level, optname, reinterpret_cast<const char*>(optval), static_cast<int>(optlen));
 }
 
 // Keep the original functions for char* buffers
