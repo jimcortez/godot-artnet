@@ -68,8 +68,10 @@ if env["platform"] == "macos" or env["platform"] == "ios":
 elif env["platform"] == "linux" or env["platform"] == "android":
     artnet_sources.append("lib-artnet-4-cpp/artnet/network_interface_linux.cpp")
 elif env["platform"] == "windows":
-    # Windows might need special handling, but for now use BSD interface
-    artnet_sources.append("lib-artnet-4-cpp/artnet/network_interface_bsd.cpp")
+    # On Windows, the library code includes network_interface_linux.h and instantiates NetworkInterfaceLinux
+    # So we need to compile network_interface_linux.cpp on Windows too
+    # Our compatibility headers make it work on Windows
+    artnet_sources.append("lib-artnet-4-cpp/artnet/network_interface_linux.cpp")
 else:
     # Default to BSD interface for other platforms
     artnet_sources.append("lib-artnet-4-cpp/artnet/network_interface_bsd.cpp")
@@ -147,6 +149,10 @@ if env["target"] in ["editor", "template_debug"]:
 suffix = env['suffix'].replace(".dev", "").replace(".universal", "")
 
 lib_filename = "{}{}{}{}".format(env.subst('$SHLIBPREFIX'), libname, suffix, env.subst('$SHLIBSUFFIX'))
+
+# Link ws2_32 on Windows for the final library (needed for Windows socket functions)
+if env["platform"] == "windows":
+    env.Append(LIBS=["ws2_32"])
 
 library = env.SharedLibrary(
     "bin/{}/{}".format(env['platform'], lib_filename),
