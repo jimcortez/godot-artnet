@@ -42,15 +42,8 @@
 #include <arpa/inet.h>
 #endif
 #else
-// On Linux, try to include the real sys/_endian.h if it exists
-#if defined(__GNUC__) || defined(__clang__)
-#ifdef __has_include
-#if __has_include(<sys/_endian.h>)
-#include_next <sys/_endian.h>
-#endif
-#endif
-#endif
-// Include arpa/inet.h for htons/ntohs
+// On Linux, sys/_endian.h doesn't exist (it's BSD/macOS only)
+// Just include arpa/inet.h which provides htons/ntohs/htonl/ntohl
 #if defined(__GNUC__) || defined(__clang__)
 #include_next <arpa/inet.h>
 #else
