@@ -70,6 +70,11 @@ inline uint32_t ntohl(uint32_t netlong) {
 // On Linux, ensure netinet/in.h is included first as htons/ntohs may depend on it
 #include_next <netinet/in.h>
 #include_next <arpa/inet.h>
+#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+// On macOS/BSD systems, include the real headers
+// These systems have inet_ntop and inet_pton in arpa/inet.h
+#include_next <netinet/in.h>
+#include_next <arpa/inet.h>
 #endif
 #else
 // For compilers without #include_next support:

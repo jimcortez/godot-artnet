@@ -2,6 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include "../lib-artnet-4-cpp/artnet/logging.h"
 
 using namespace godot;
 
@@ -13,6 +14,7 @@ void ArtNetController::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_enable_sending_dmx", "enable"), &ArtNetController::set_enable_sending_dmx);
 	ClassDB::bind_method(D_METHOD("set_dmx_data", "universe", "data"), &ArtNetController::set_dmx_data);
 	ClassDB::bind_method(D_METHOD("send_dmx"), &ArtNetController::send_dmx);
+	ClassDB::bind_method(D_METHOD("set_log_level", "level"), &ArtNetController::set_log_level);
 }
 
 ArtNetController::ArtNetController() {
@@ -84,5 +86,9 @@ bool ArtNetController::send_dmx() {
 		return false;
 	}
 	return controller->sendDmx();
+}
+
+void ArtNetController::set_log_level(int level) {
+	ArtNet::Logger::setLevel(static_cast<ArtNet::LogLevel>(level));
 }
 

@@ -35,5 +35,8 @@ public:
 	void set_enable_sending_dmx(bool enable);
 	bool set_dmx_data(int universe, const PackedByteArray &data);
 	bool send_dmx();
+	
+	// Debugging
+	void set_log_level(int level); // 0=NONE, 1=ERROR, 2=INFO, 3=DEBUG
 };
 
