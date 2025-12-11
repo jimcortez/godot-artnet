@@ -26,11 +26,51 @@
 #endif
 // Also include netinet/in.h as it may be needed
 #include_next <netinet/in.h>
+// Include arpa/inet.h which should provide htons/ntohs/htonl/ntohl
+#include_next <arpa/inet.h>
+
+// If the functions still aren't declared (e.g., #include_next didn't work), declare them ourselves
+// This is a fallback for Android NDK versions where #include_next doesn't work correctly
+#include <cstdint>
+
+// Undefine any macros first (in case system headers defined them as macros)
+#ifdef htons
+#undef htons
+#endif
+#ifdef ntohs
+#undef ntohs
+#endif
+#ifdef htonl
+#undef htonl
+#endif
+#ifdef ntohl
+#undef ntohl
+#endif
+
+// Provide our own implementations as fallback
+// These will be used if system headers didn't provide the functions
+// Note: We assume little-endian (which Android is), so we need to swap bytes
+inline uint16_t htons(uint16_t hostshort) {
+    return ((hostshort & 0xFF00) >> 8) | ((hostshort & 0x00FF) << 8);
+}
+
+inline uint16_t ntohs(uint16_t netshort) {
+    return htons(netshort);
+}
+
+inline uint32_t htonl(uint32_t hostlong) {
+    return ((hostlong & 0xFF000000) >> 24) | ((hostlong & 0x00FF0000) >> 8) |
+           ((hostlong & 0x0000FF00) << 8) | ((hostlong & 0x000000FF) << 24);
+}
+
+inline uint32_t ntohl(uint32_t netlong) {
+    return htonl(netlong);
+}
 #elif defined(__linux__)
 // On Linux, ensure netinet/in.h is included first as htons/ntohs may depend on it
 #include_next <netinet/in.h>
-#endif
 #include_next <arpa/inet.h>
+#endif
 #else
 // For compilers without #include_next support:
 // Check if we're being included recursively (system header guard already defined)
