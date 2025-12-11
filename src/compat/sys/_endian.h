@@ -23,63 +23,21 @@
 // Linux/Android: provide byte order functions via arpa/inet.h
 // On Android, sys/_endian.h may not exist, so we need to ensure htons/ntohs are available
 #if defined(__ANDROID__)
-// On Android, we need to ensure htons/ntohs are available
-// #include_next might not work correctly with Android NDK, so we'll try multiple approaches
+// On Android, arpa/inet.h is already included by the library and provides fallback functions
+// We just need to ensure the headers are included in the right order
+// Since arpa/inet.h already has the fallback implementations, we don't redefine them here
 #if defined(__GNUC__) || defined(__clang__)
 // Include netinet/in.h first (required for socket types)
 #include_next <netinet/in.h>
-// Try endian.h if available (some Android NDK versions have htons/ntohs here)
-#ifdef __has_include
-#if __has_include(<endian.h>)
-#include_next <endian.h>
-#endif
-#endif
-// Include arpa/inet.h which should provide htons/ntohs/htonl/ntohl
+// Include arpa/inet.h which provides htons/ntohs/htonl/ntohl (with fallbacks if needed)
+// Note: arpa/inet.h compatibility header already provides fallback functions on Android
 #include_next <arpa/inet.h>
 #else
 // For non-GCC/Clang compilers, include directly
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #endif
-
-// If the functions still aren't declared (e.g., #include_next didn't work), declare them ourselves
-// This is a fallback for Android NDK versions where #include_next doesn't work correctly
-#include <cstdint>
-
-// Undefine any macros first (in case system headers defined them as macros)
-// Then provide our own implementations
-#ifdef htons
-#undef htons
-#endif
-#ifdef ntohs
-#undef ntohs
-#endif
-#ifdef htonl
-#undef htonl
-#endif
-#ifdef ntohl
-#undef ntohl
-#endif
-
-// Provide our own implementations
-// These will be used if system headers didn't provide the functions
-// Note: We assume little-endian (which Android is), so we need to swap bytes
-inline uint16_t htons(uint16_t hostshort) {
-    return ((hostshort & 0xFF00) >> 8) | ((hostshort & 0x00FF) << 8);
-}
-
-inline uint16_t ntohs(uint16_t netshort) {
-    return htons(netshort);
-}
-
-inline uint32_t htonl(uint32_t hostlong) {
-    return ((hostlong & 0xFF000000) >> 24) | ((hostlong & 0x00FF0000) >> 8) |
-           ((hostlong & 0x0000FF00) << 8) | ((hostlong & 0x000000FF) << 24);
-}
-
-inline uint32_t ntohl(uint32_t netlong) {
-    return htonl(netlong);
-}
+// Functions are now available from arpa/inet.h (either from system or our fallback)
 #else
 // On Linux, sys/_endian.h doesn't exist (it's BSD/macOS only)
 // Just include arpa/inet.h which provides htons/ntohs/htonl/ntohl
