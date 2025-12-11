@@ -15,9 +15,12 @@
 #include <sys/time.h>
 #endif
 
-// On Windows, include sys/socket.h to ensure SHUT_RD is available
-// ArtNetController.cpp uses SHUT_RD but doesn't include sys/socket.h directly
+// On Windows, include sys/types.h first to provide types needed by sys/stat.h
+// This must be included before any Windows headers that might include sys/stat.h
 #ifdef _WIN32
+#include <sys/types.h>
+// Then include sys/socket.h to ensure SHUT_RD is available
+// ArtNetController.cpp uses SHUT_RD but doesn't include sys/socket.h directly
 #include <sys/socket.h>
 #endif
 

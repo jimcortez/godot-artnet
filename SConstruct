@@ -46,6 +46,16 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
 env.Append(CPPPATH=["src/", "lib-artnet-4-cpp/artnet"])
 
+# On Windows, add compat directory to regular env so our code can find compatibility headers
+# when including library headers (library headers need netinet/in.h etc. on Windows)
+# This is only needed on Windows where POSIX headers don't exist
+if env["platform"] == "windows":
+    compat_path = os.path.abspath("src/compat")
+    if "is_msvc" in env and env["is_msvc"]:
+        env.Append(CCFLAGS=["/I", compat_path])
+    else:
+        env.Append(CCFLAGS=["-isystem", compat_path])
+
 # Add artnet library sources
 artnet_sources = [
     "lib-artnet-4-cpp/artnet/ArtNetController.cpp",
