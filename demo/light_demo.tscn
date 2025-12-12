@@ -1,0 +1,48 @@
+[gd_scene load_steps=8 format=3 uid="uid://dm5d0wa7pjibg"]
+
+[ext_resource type="Script" uid="uid://c1q4rodi1clf3" path="res://light_demo.gd" id="1_light_demo"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_1"]
+sky_top_color = Color(0.2, 0.4, 0.8, 1)
+sky_horizon_color = Color(0.5, 0.6, 0.7, 1)
+ground_bottom_color = Color(0.1, 0.1, 0.15, 1)
+ground_horizon_color = Color(0.3, 0.3, 0.35, 1)
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("SkyMaterial_1")
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+sky_custom_fov = 139.4
+ambient_light_source = 3
+ambient_light_color = Color(0.29803923, 0.32941177, 0.08627451, 0.52156866)
+ambient_light_energy = 3.4
+reflected_light_source = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.556953, 0.556953, 0.556953, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+size = Vector2(20, 20)
+
+[sub_resource type="WorldBoundaryShape3D" id="PlaneShape_floor"]
+
+[node name="LightDemo" type="Node3D"]
+script = ExtResource("1_light_demo")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_1")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+material_override = SubResource("StandardMaterial3D_floor")
+mesh = SubResource("PlaneMesh_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("PlaneShape_floor")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 8)
+fov = 60.0

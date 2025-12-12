@@ -81,8 +81,8 @@ func _ready():
         print("Failed to start ArtNet controller")
         return
     
-    # Enable DMX sending (required before send_dmx() will actually transmit)
-    artnet.set_enable_sending_dmx(true)
+    # DMX sending is automatically enabled when the controller starts
+    # Optional: Disable it if needed with artnet.set_enable_sending_dmx(false)
     
     print("ArtNet controller started")
 
@@ -222,7 +222,7 @@ The main class for ArtNet operations.
 
 - **`set_enable_sending_dmx(enable: bool) -> void`**
   
-  Enables or disables DMX transmission. By default, DMX sending is disabled. You must call this method with `true` before `send_dmx()` will actually transmit data. When disabled, `send_dmx()` will return `true` without sending any packets.
+  Enables or disables DMX transmission. DMX sending is automatically enabled when the controller is started via `start()`. You can use this method to disable sending (by passing `false`) or re-enable it (by passing `true`) as needed. When disabled, `send_dmx()` will return `true` without sending any packets.
 
 - **`set_dmx_data(universe: int, data: PackedByteArray) -> bool`**
   
@@ -239,7 +239,7 @@ The main class for ArtNet operations.
   
   Returns `true` if the packet was sent successfully.
   
-  **Note:** DMX sending must be enabled using `set_enable_sending_dmx(true)` before this method will actually transmit data. If sending is disabled, this method will return `true` without sending any packets.
+  **Note:** DMX sending is automatically enabled when the controller starts. If sending has been disabled using `set_enable_sending_dmx(false)`, this method will return `true` without sending any packets.
 
 ## Art-Net Protocol
 
@@ -260,7 +260,76 @@ Each universe supports up to 512 DMX channels, with values ranging from 0-255.
 
 ## Demo Project
 
-A demo project is included in the `demo/` directory. Open it in Godot to see a working example of ArtNet transmission.
+A demo project is included in the `demo/` directory. Open it in Godot to see working examples of ArtNet transmission.
+
+### Examples
+
+The demo project includes two example scenes that demonstrate different use cases:
+
+#### 1. Basic Example (`example.tscn` / `example.gd`)
+
+A simple example that demonstrates basic ArtNet DMX transmission. This example:
+
+- Sends random DMX values to all 512 channels
+- Updates every 0.5 seconds
+- Shows the basic setup and configuration process
+- Perfect for testing ArtNet connectivity
+
+**Key Features:**
+- Simple, straightforward implementation
+- Random DMX data generation
+- Configurable send interval
+- Full universe (512 channels) transmission
+
+**Usage:**
+1. Update `BIND_ADDRESS` and `BROADCAST_ADDRESS` in `example.gd` to match your network configuration (see [Network Configuration](#network-configuration))
+2. Run the scene in Godot
+3. The example will start sending random DMX data on universe 1
+
+#### 2. Light Demo (`light_demo.tscn` / `light_demo.gd`)
+
+An advanced visual demo that creates a 3D scene with animated orbs and real-time DMX output. This example:
+
+- Creates a 4×4 grid of 16 colored orbs in a 3D scene
+- Each orb smoothly transitions between random colors every 2 seconds
+- Maps each orb's RGB color to 3 DMX channels (48 total channels)
+- Sends DMX data every 10ms for smooth, real-time updates
+- Features a sky, ambient lighting, and plastic-like orb materials
+
+**Key Features:**
+- Visual 3D representation of DMX fixtures
+- Real-time color-to-DMX mapping
+- Smooth color interpolation
+- High-frequency DMX updates (100 Hz)
+- Professional lighting visualization
+
+**DMX Channel Mapping:**
+- Orb 0: Channels 1-3 (Red, Green, Blue)
+- Orb 1: Channels 4-6 (Red, Green, Blue)
+- Orb 2: Channels 7-9 (Red, Green, Blue)
+- ... and so on for all 16 orbs
+
+Each orb uses 3 consecutive DMX channels for RGB color control, making it compatible with standard RGB DMX fixtures.
+
+**Usage:**
+1. Update `BIND_ADDRESS` and `BROADCAST_ADDRESS` in `light_demo.gd` to match your network configuration
+2. Run the scene in Godot
+3. Watch the orbs change colors and see the DMX data being transmitted in real-time
+4. Connect your ArtNet-compatible RGB fixtures to see them respond to the color changes
+
+**Scene Features:**
+- Sky with procedural sky material
+- Ambient lighting for better visualization
+- Floor plane for spatial reference
+- Camera positioned to view all orbs
+- Plastic-like materials on orbs with emission and clearcoat for realistic appearance
+
+**Customization:**
+You can easily customize the demo by modifying constants in `light_demo.gd`:
+- `GRID_SIZE`: Change the grid size (currently 4×4 = 16 orbs)
+- `COLOR_CHANGE_INTERVAL`: How often colors change (default: 2.0 seconds)
+- `DMX_SEND_INTERVAL`: DMX update frequency (default: 0.01 seconds = 100 Hz)
+- `UNIVERSE`: ArtNet universe number (default: 1)
 
 ## Building for Different Platforms
 
