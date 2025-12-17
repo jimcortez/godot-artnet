@@ -50,7 +50,5 @@ android.arm64.double.debug = "./android/libgodot-artnet.android.template_debug.a
 android.arm64.single.release = "./android/libgodot-artnet.android.template_release.arm64.so"
 android.arm64.double.release = "./android/libgodot-artnet.android.template_release.arm64.double.so"
 
-web.wasm32.single.debug = "./web/libgodot-artnet.web.template_debug.wasm32.nothreads.wasm"
-web.wasm32.double.debug = "./web/libgodot-artnet.web.template_debug.wasm32.double.nothreads.wasm"
-web.wasm32.single.release = "./web/libgodot-artnet.web.template_release.wasm32.nothreads.wasm"
-web.wasm32.double.release = "./web/libgodot-artnet.web.template_release.wasm32.double.nothreads.wasm"
+; Note: Web/Emscripten is not supported - Art-Net requires direct UDP socket access
+; which is not available in web browsers. See README for details.
