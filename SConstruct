@@ -113,16 +113,21 @@ else:
     artnet_env.Append(CCFLAGS=["-include", "src/artnet_force_include.h"])
 
 # Add compatibility include path scoped to artnet library sources only
-# Using compiler-specific flags to add compat directory as system include path
-# This keeps compatibility headers isolated to library sources, not affecting our own code
-compat_path = os.path.abspath("src/compat")
-if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
-    # MSVC: use /I (Include Path) - system includes are treated specially
-    artnet_env.Append(CCFLAGS=["/I", compat_path])
-else:
-    # GCC/Clang: use -isystem to mark as system header directory
-    # This suppresses warnings and keeps it scoped to artnet sources
-    artnet_env.Append(CCFLAGS=["-isystem", compat_path])
+# The compat headers provide:
+# - Windows: POSIX networking headers via WinSock2
+# - Linux/Android: sys/_endian.h compatibility (macOS-specific header the library includes)
+# - Web/Emscripten: networking function implementations (inet_ntop, inet_addr, etc.)
+# macOS and iOS have all required headers natively, so they don't need compat path
+# (Using compat path on macOS/iOS causes #include_next issues with cross-compilation)
+if env["platform"] != "macos" and env["platform"] != "ios":
+    compat_path = os.path.abspath("src/compat")
+    if "is_msvc" in artnet_env and artnet_env["is_msvc"]:
+        # MSVC: use /I (Include Path) - system includes are treated specially
+        artnet_env.Append(CCFLAGS=["/I", compat_path])
+    else:
+        # GCC/Clang: use -isystem to mark as system header directory
+        # This suppresses warnings and keeps it scoped to artnet sources
+        artnet_env.Append(CCFLAGS=["-isystem", compat_path])
 
 # Add Windows-specific settings
 if env["platform"] == "windows":

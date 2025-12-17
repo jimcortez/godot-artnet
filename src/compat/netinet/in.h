@@ -18,8 +18,19 @@
 // sockaddr_in, socklen_t, etc. are already defined in winsock2.h
 // AF_INET, SOCK_DGRAM, IPPROTO_UDP are in winsock2.h
 // INADDR_ANY, INADDR_BROADCAST are in winsock2.h
+
+#elif defined(__EMSCRIPTEN__)
+// Emscripten/WebAssembly platform
+// Include the Emscripten-provided netinet/in.h
+#include_next <netinet/in.h>
+
+// Ensure INADDR_NONE is defined (needed for inet_addr error return)
+#ifndef INADDR_NONE
+#define INADDR_NONE ((uint32_t)0xffffffff)
+#endif
+
 #else
-// On Unix/Linux, include the real netinet/in.h using include_next to skip this header
+// On Unix/Linux/macOS/iOS, include the real netinet/in.h using include_next to skip this header
 // #include_next is supported by GCC, Clang, and Intel ICC
 #if defined(__GNUC__) || defined(__clang__) || (defined(__INTEL_COMPILER) && __INTEL_COMPILER >= 800)
 #include_next <netinet/in.h>
@@ -33,7 +44,7 @@
 #error "netinet/in.h compatibility header requires GCC, Clang, or Intel ICC compiler with #include_next support"
 #endif
 #endif
-#endif // _WIN32
+#endif // _WIN32 / __EMSCRIPTEN__ / else
 #endif // NETINET_IN_H
 
 
