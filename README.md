@@ -10,7 +10,7 @@ Also see [godot-artnet](https://github.com/jimcortez/godot-libartnet), which wra
 - Support for multiple universes
 - Thread-safe operations
 - Simple GDScript API
-- Cross-platform support (Linux, macOS, Windows, Android, iOS, Web)
+- Cross-platform support (Linux, macOS, Windows, Android, iOS)
 
 ## Requirements
 
@@ -339,9 +339,20 @@ The extension supports building for:
 - Windows (x86_32, x86_64)
 - Android (x86_64, ARM64)
 - iOS (ARM64)
-- Web (WASM32)
 
 Build artifacts are placed in `bin/<platform>/` and automatically copied to `demo/bin/<platform>/` when using SCons.
+
+### Web/Emscripten Platform Not Supported
+
+This extension does **not** support the Web/Emscripten platform. Art-Net is a UDP-based networking protocol that requires direct socket access to send and receive packets on the local network. Web browsers operate in a sandboxed environment that does not allow:
+
+- **Direct UDP socket access**: Browsers cannot create UDP sockets, which are required for Art-Net communication
+- **Local network broadcasting**: Art-Net relies on UDP broadcast to discover and communicate with devices on the local network, which is not possible from a browser
+- **Low-level networking**: The Web platform only supports HTTP/HTTPS, WebSocket, and WebRTC protocols, none of which are compatible with Art-Net
+
+If you need to control Art-Net devices from a web browser, consider:
+- Running a native application or server that acts as a bridge between WebSocket connections and Art-Net
+- Using a dedicated lighting control application on the same machine as the Godot game
 
 ## Troubleshooting
 
